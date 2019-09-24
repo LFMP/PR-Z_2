@@ -1,5 +1,5 @@
 # PR-Z 2
-Codes developed (majorly in Python 3) for the author's Undergraduate Thesis. This one uses Pattern Recognition techniques to automaticaly classify diseases using glial cells from the enteric nervous system. 
+Code developed for the author's Undergraduate Thesis. The ones here found, use Pattern Recognition techniques to automaticaly classify diseases using glial cells digital images extracted from the enteric nervous system. 
 
 Abstract:
 
