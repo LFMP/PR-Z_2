@@ -21,6 +21,7 @@ classif.BATCH_SIZE = 128
 if not os.path.isdir(OUTPUT_DIR):
     os.mkdir(OUTPUT_DIR)
     os.mkdir(OUTPUT_DIR + "graphics/")
+    os.mkdir(OUTPUT_DIR + "models/")
 
 beg_time = time.time()
 
@@ -38,9 +39,14 @@ for disease in diseases:
 
         print("\nTest: {} / Train: {}\n".format(len(y_test), len(y_train)))
 
-        preds, score, hist  = classif.CNN_Classifier(X_train, X_test, X_hold, y_train, y_test, model_name='MaxNet')
+        preds, score, hist  = classif.CNN_Classifier(X_train, X_test, X_hold, 
+                                                    y_train, y_test, 
+                                                    disease + "_" + str(i),
+                                                    OUTPUT_DIR + "models/", 
+                                                    model_name='AlexNet')
         print(score)
-        histories.append(hist)
+        #histories.append(hist)
+        plot_history(hist.history,"{}graphics/{}".format(OUTPUT_DIR, disease+"_"+str(i)))
 
         for j in range(len(preds)):
             pred = preds[j]
@@ -48,18 +54,19 @@ for disease in diseases:
 
         # clear memory
         del X_train, X_test, X_hold, y_train, y_test, y_hold, preds, score, hist
+        K.clear_session()
     
-    hist = {
-        'acc':      np.mean(np.array([i.history['acc'] for i in histories]), axis=0      ).tolist(),
-        'val_acc':  np.mean(np.array([i.history['val_acc'] for i in histories]), axis=0  ).tolist(),
-        'loss':     np.mean(np.array([i.history['loss'] for i in histories]), axis=0     ).tolist(),
-        'val_loss': np.mean(np.array([i.history['val_loss'] for i in histories]), axis=0 ).tolist()
-    }
+    #hist = {
+    #    'acc':      np.mean(np.array([i.history['acc'] for i in histories]), axis=0      ).tolist(),
+    #    'val_acc':  np.mean(np.array([i.history['val_acc'] for i in histories]), axis=0  ).tolist(),
+    #    'loss':     np.mean(np.array([i.history['loss'] for i in histories]), axis=0     ).tolist(),
+    #    'val_loss': np.mean(np.array([i.history['val_loss'] for i in histories]), axis=0 ).tolist()
+    #}
     pd.DataFrame(output, columns=['Pred', 'Label', 'Healthy', 'Unhealthy']).to_csv(OUTPUT_DIR + disease + '.csv', sep=" ")
-    plot_history(hist,"{}graphics/{}".format(OUTPUT_DIR, disease))
+    #plot_history(hist,"{}graphics/{}".format(OUTPUT_DIR, disease))
 
     # clear memory
-    del histories, output
+    del histories, output#, hist
 
 for disease in diseases: 
     print("\nGetting classification report: " + disease)
