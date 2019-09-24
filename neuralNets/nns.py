@@ -102,13 +102,23 @@ class GeneralClassifier():
         return deep_model.predict(input_fn=input_fn_eval, predict_keys='probabilities')
 
     # ------------------------------------- CNN
-    def CNN_Classifier(self, X_train, X_test, X_pred, y_train, y_test, model_name='MaxNet'):
+    def CNN_Classifier(self, X_train, X_test, X_pred, y_train, y_test, tag, output, model_name='MaxNet'):
         # INPUT_SHAPE = (self.IMG_HEIGHT, self.IMG_WIDTH, self.NUM_COLOR_CHANNELS)
         
+
         model = self.model_selector(model_name)
+        model.compile(optimizer=Adam(lr=self.LEARNING_RATE, beta_1=0.9, beta_2=0.999, decay=0.0005), loss='categorical_crossentropy', metrics=['accuracy'])
+
+        # callbacks
+        es = EarlyStopping(monitor='val_loss', mode='min', verbose=0, patience=64)
+        mc = ModelCheckpoint(output + tag + '_best_model.h5', monitor='val_acc', mode='max', verbose=0, save_best_only=True)
+        callbacks_list = [es, mc]
 
         # train
-        history = model.fit(X_train, y_train, validation_data=(X_test, y_test), verbose=1, epochs=self.NUM_EPOCHS, batch_size=self.BATCH_SIZE)
+        history = model.fit(X_train, y_train, validation_data=(X_test, y_test), verbose=1, epochs=self.NUM_EPOCHS, batch_size=self.BATCH_SIZE, callbacks=callbacks_list)
+
+        del model
+        model = load_model(output + tag + '_best_model.h5')
 
         # evaluate and test
         print("Evaluating")
@@ -116,7 +126,7 @@ class GeneralClassifier():
         print("Testing")
         predictions = model.predict_proba(X_pred)
 
-        del model
+        del model, callbacks_list, mc, es
 
         return predictions, score, history
 
@@ -150,8 +160,6 @@ class GeneralClassifier():
         model.add(Dense(512, activation=LeakyReLU(alpha=0.01)))
         model.add(Dense(self.N_CLASSES, activation='softmax'))
 
-        model.compile(optimizer=Adam(lr=self.LEARNING_RATE, beta_1=0.9, beta_2=0.999, decay=0.0005), loss='categorical_crossentropy', metrics=['accuracy'])
-
         return model
     
     def LeNet5(self, height, width, num_chan):
@@ -168,8 +176,6 @@ class GeneralClassifier():
         model.add(Dense(units = 120, activation = 'relu'))
         model.add(Dense(units = 84, activation = 'relu'))
         model.add(Dense(units = self.N_CLASSES, activation = 'softmax'))
-
-        model.compile(optimizer = 'adam', loss = 'categorical_crossentropy', metrics = ['accuracy'])
 
         return model
 
@@ -220,8 +226,6 @@ class GeneralClassifier():
 
         # Output Layer
         model.add(Dense(self.N_CLASSES, activation = 'softmax'))
-
-        model.compile(optimizer = 'adam', loss = 'categorical_crossentropy', metrics = ['accuracy'])
 
         return model
 
