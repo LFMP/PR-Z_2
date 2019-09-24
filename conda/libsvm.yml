@@ -1,0 +1,9 @@
+name: libsvm
+  - python=2.7
+  - pip
+  - opencv
+  - pip:
+    - scikit-learn
+
+# python ideepcolor.py --image_file '../IMG-20170815-WA0006.jpg'  --backend 'pytorch'
+
