@@ -22,8 +22,7 @@ class GradientFilters():
 		sobely = cv2.Sobel(img_sample, cv2.CV_64F,0,1,ksize=self.kernel_size)
 
 		if self.uint8:
-			sobelx = np.uint8(np.absolute(sobelx))
-			sobely = np.uint8(np.absolute(sobely))
+			return np.uint8(np.absolute(img_sample + sobelx + sobely))
 
 		return img_sample + sobelx + sobely
 
@@ -32,8 +31,7 @@ class GradientFilters():
 		scharry = cv2.Scharr(img_sample, cv2.CV_64F,0,1)
 
 		if self.uint8:
-			scharrx = np.uint8(np.absolute(scharrx))
-			scharry = np.uint8(np.absolute(scharry))
+			return scharrx = np.uint8(np.absolute(img_sample + scharrx + scharry))
 
 		return img_sample + scharrx + scharry
 
