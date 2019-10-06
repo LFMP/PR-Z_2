@@ -13,7 +13,7 @@ class GradientFilters():
 		laplacian = cv2.Laplacian(img_sample, cv2.CV_64F)
 
 		if self.uint8:
-			laplacian = np.uint8(np.absolute(laplacian))
+			return laplacian = np.uint8(np.absolute(img_sample + laplacian))
 
 		return img_sample + laplacian
 
